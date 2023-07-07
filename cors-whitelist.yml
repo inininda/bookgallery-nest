@@ -1,0 +1,5 @@
+corsModels:
+  allowWhitelist:
+    origins:
+      - "*"
+    allowCredentials: false
