@@ -2,6 +2,12 @@
 /dist
 /node_modules
 
+#environment variables
+.env.*
+.env.**
+!.env.stage-sample
+!.env.aws.stage-sample
+
 # Logs
 logs
 *.log
