@@ -1,5 +1,5 @@
 export const RolesConfig = {
-  ANYONE: ['GET/api/users'],
+  ANYONE: ['POST/api/signup', 'POST/api/signin'],
   ADMIN: [],
-  USER: [],
+  USER: ['POST/api/users/me'],
 };
