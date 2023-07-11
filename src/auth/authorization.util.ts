@@ -9,19 +9,22 @@ import { BusinessException } from 'src/util/BusinessException';
 import { RolesConfig } from 'src/config/roles.permission';
 
 import { User } from 'src/model/user.entity';
+import { UserRoles } from 'src/model/user.roles.entity';
 import { Inject } from '@nestjs/common';
 
-const roles: any = {
-  ANYONE: 'anyone',
-  USER: 'user',
-  ADMIN: 'admin',
-};
 export class Auth {
   constructor(
     private jwt: JWT,
     @Inject('USER_REPOSITORY')
     private userRepository: typeof User,
+    @Inject('USER_ROLES_REPOSITORY')
+    private userRolesRepository: typeof UserRoles,
   ) {}
+  roles: any = {
+    ANYONE: 'ANYONE',
+    ADMIN: 'ADMIN',
+    USER: 'USER',
+  };
   public signJWT(
     profileId: number,
     profileEmail: string,
@@ -91,6 +94,35 @@ export class Auth {
       } else {
         return new Error('Unknown renewal state');
       }
+    }
+  }
+  public async allowRoles(userJWT: string, functionName: string) {
+    let roleAllowed = Object.keys(RolesConfig).reduce(
+      (acc: any, role: any) =>
+        RolesConfig[role].includes(functionName)
+          ? (acc = acc ? acc.concat(`|`, role) : ''.concat(role))
+          : (role = acc),
+      false,
+    );
+    roleAllowed = (
+      !roleAllowed || roleAllowed.length === 0
+        ? '|'
+        : roleAllowed.includes('|')
+        ? roleAllowed
+        : roleAllowed.concat('|')
+    ).split(`|`);
+
+    const data = await this.verify(userJWT);
+    if (!data || data instanceof Error) {
+      if (roleAllowed.includes(this.roles.ANYONE)) {
+        return [this.roles.ANYONE];
+      }
+      return data;
+    }
+    if (data.state === 'valid' || data.state === 'renew') {
+      console.log(data);
+    } else {
+      throw new BusinessException('Invalid JWT for user');
     }
   }
 }

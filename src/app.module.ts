@@ -7,6 +7,7 @@ import { Middleware } from './config/middleware';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './config/database.module';
 import { APP_FILTER } from '@nestjs/core';
+import { UserRolesModule } from './user_roles/user_roles.module';
 
 const importModule = [
   ConfigModule.forRoot({

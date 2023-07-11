@@ -12,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 
 import { BaseModel } from './base.model';
+import { UserRoles } from './user.roles.entity';
 
 @Table({
   tableName: 'Users',
@@ -62,4 +63,7 @@ export class User extends BaseModel {
     type: DataType.STRING(255),
   })
   address?: string;
+
+  @HasMany(() => UserRoles, 'user_id')
+  user_roles?: UserRoles[];
 }

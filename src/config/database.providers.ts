@@ -1,5 +1,6 @@
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { User } from 'src/model/user.entity';
+import { UserRoles } from 'src/model/user.roles.entity';
 export const databaseProvider = {
   provide: 'SEQUELIZE',
   useFactory: async () => {
@@ -22,7 +23,7 @@ export const databaseProvider = {
         connectTimeout: 60000,
       },
     });
-    sequelize.addModels([User]);
+    sequelize.addModels([User, UserRoles]);
     await sequelize.sync();
     return sequelize;
   },

@@ -3,6 +3,7 @@ import { UsersRequest } from './users.request';
 import { JWT } from 'src/util/jwt';
 import { Auth } from 'src/auth/authorization.util';
 import { User } from 'src/model/user.entity';
+import { UserRoles } from 'src/model/user.roles.entity';
 import { ObjectType } from 'src/util/types';
 import { BusinessException } from 'src/util/BusinessException';
 import _ from 'lodash';
@@ -12,9 +13,11 @@ export class UsersService {
   constructor(
     @Inject('USER_REPOSITORY')
     private userRepository: typeof User,
+    @Inject('USER_ROLES_REPOSITORY')
+    private userRolesRepository: typeof UserRoles,
     private readonly jwt: JWT,
   ) {
-    this.auth = new Auth(this.jwt, User);
+    this.auth = new Auth(this.jwt, User, UserRoles);
   }
   auth: any;
   async getUserActive(req: any): Promise<any> {

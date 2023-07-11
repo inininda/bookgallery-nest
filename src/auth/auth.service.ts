@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { JWT } from 'src/util/jwt';
 import { User } from 'src/model/user.entity';
+import { UserRoles } from 'src/model/user.roles.entity';
 import { Auth } from './authorization.util';
 import { UsersRequest, UserSignUpScheme } from 'src/users/users.request';
 import { BusinessException } from 'src/util/BusinessException';
@@ -19,9 +20,11 @@ export class AuthService {
   constructor(
     @Inject('USER_REPOSITORY')
     private userRepository: typeof User,
+    @Inject('USER_ROLES_REPOSITORY')
+    private userRolesRepository: typeof UserRoles,
     private readonly jwt: JWT,
   ) {
-    this.auth = new Auth(this.jwt, User);
+    this.auth = new Auth(this.jwt, User, UserRoles);
   }
   auth: any;
 
@@ -53,6 +56,11 @@ export class AuthService {
       if (!findUser || findUser instanceof Error) {
         throw new BusinessException('Failed to create user');
       }
+
+      const createUserRoles = this.userRolesRepository.add({
+        user_id: findUser.id,
+        role: 'USER',
+      });
       const jwtToken = await this.auth.signJWT(findUser.id, findUser.email, {});
       if (!jwtToken || jwtToken instanceof Error) {
         throw new BusinessException('Failed signing token');
